@@ -1,0 +1,30 @@
+// vi: ft=rust
+
+use crate::ast::{Grammar};
+
+grammar;
+
+
+pub Grammar: Grammar = {
+    "Nonterminals" <Nonterminals> "." => Grammar {
+        nonterminals:  <>.into_iter().rev().collect()
+    },
+}
+
+Nonterminals: Vec<String> = {
+    <x:Nonterminal> => vec![x],
+
+    <x:Nonterminal> <v:Nonterminals> => {
+        let mut v = v;
+        v.push(x);
+        v
+    }
+}
+
+Nonterminal: String = {
+    <RawIdentifier>,
+}
+
+RawIdentifier: String = {
+    r"[a-z|_]*" => <>.to_string(),
+}
