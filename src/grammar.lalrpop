@@ -6,24 +6,45 @@ grammar;
 
 
 pub Grammar: Grammar = {
-    "Nonterminals" <Nonterminals> "." => Grammar {
-        declarations: vec![
-            Declaration(DeclarationType::Nonterminals, <>.into_iter().rev().collect())
-        ]
+    <Declarations> => Grammar {
+        declarations: <>.into_iter().rev().collect()
     },
 }
 
-Nonterminals: Vec<String> = {
-    <x:Nonterminal> => vec![x],
-
-    <x:Nonterminal> <v:Nonterminals> => {
+Declarations: Vec<Declaration> = {
+    <Declaration> => vec![<>],
+    <x:Declaration> <v:Declarations> => {
         let mut v = v;
         v.push(x);
         v
     }
 }
 
-Nonterminal: String = {
+Declaration: Declaration = {
+    <t:DeclarationType> <v:DeclarationValues> "." => Declaration(t, v.into_iter().rev().collect())
+}
+
+DeclarationType: DeclarationType = {
+    "Nonterminals" => DeclarationType::Nonterminals,
+    "Terminals" => DeclarationType::Terminals,
+    "Rootsymbol" => DeclarationType::Rootsymbol,
+    "Expect" => DeclarationType::Expect,
+    "Left" => DeclarationType::Left,
+    "Right" => DeclarationType::Right,
+    "Nonassoc" => DeclarationType::Nonassoc,
+}
+
+DeclarationValues: Vec<String> = {
+    <x:DeclarationValue> => vec![x],
+
+    <x:DeclarationValue> <v:DeclarationValues> => {
+        let mut v = v;
+        v.push(x);
+        v
+    }
+}
+
+DeclarationValue: String = {
     <RawIdentifier>,
 }
 
