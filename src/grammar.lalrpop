@@ -1,13 +1,15 @@
 // vi: ft=rust
 
-use crate::ast::{Grammar};
+use crate::ast::{Declaration, DeclarationType, Grammar};
 
 grammar;
 
 
 pub Grammar: Grammar = {
     "Nonterminals" <Nonterminals> "." => Grammar {
-        nonterminals:  <>.into_iter().rev().collect()
+        declarations: vec![
+            Declaration(DeclarationType::Nonterminals, <>.into_iter().rev().collect())
+        ]
     },
 }
 

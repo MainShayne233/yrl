@@ -1,7 +1,7 @@
 #[macro_use]
 extern crate lalrpop_util;
 
-use crate::ast::Grammar;
+use crate::ast::{Declaration, DeclarationType, Grammar};
 
 lalrpop_mod!(pub grammar);
 
@@ -22,19 +22,22 @@ Nonterminals
     assert_eq!(
         program,
         Grammar {
-            nonterminals: vec![
-                String::from("grammar"),
-                String::from("expr_list"),
-                String::from("expr"),
-                String::from("container_expr"),
-                String::from("block_expr"),
-                String::from("access_expr"),
-                String::from("call_args_parens_expr"),
-                String::from("call_args_parens_base"),
-                String::from("call_args_parens"),
-                String::from("parens_call"),
-                String::from("number")
-            ]
+            declarations: vec![Declaration(
+                DeclarationType::Nonterminals,
+                vec![
+                    String::from("grammar"),
+                    String::from("expr_list"),
+                    String::from("expr"),
+                    String::from("container_expr"),
+                    String::from("block_expr"),
+                    String::from("access_expr"),
+                    String::from("call_args_parens_expr"),
+                    String::from("call_args_parens_base"),
+                    String::from("call_args_parens"),
+                    String::from("parens_call"),
+                    String::from("number")
+                ]
+            )]
         }
     )
 }
