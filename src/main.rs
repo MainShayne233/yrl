@@ -1,11 +1,17 @@
 #[macro_use]
 extern crate lalrpop_util;
 
-use crate::ast::{Declaration, DeclarationType};
+use crate::ast::{Grammar, Declaration, DeclarationType};
+use crate::preprocess::*;
 
 lalrpop_mod!(pub grammar);
 
 pub mod ast;
+pub mod preprocess;
+
+fn parse_grammar(input: &str) -> Grammar {
+    grammar::GrammarParser::new().parse(&strip_extra(input)).unwrap()
+}
 
 #[test]
 fn test_nonterminals_parser() {
@@ -21,9 +27,15 @@ Terminals
   'true' 'false' 'nil' 'do' eol ';' ',' '.'
   '(' ')' '[' ']' '{' '}' '<<' '>>' '%{}' '%'
   .
+
+Rootsymbol grammar. % sample past code comment
+
+%% Two shift/reduce conflicts coming from call_args_parens and
+%% one coming from empty_paren on stab.
+Expect 3.
 "#;
 
-    let grammar = grammar::GrammarParser::new().parse(input).unwrap();
+    let grammar = parse_grammar(input);
     assert_eq!(
         grammar.declarations,
         vec![
@@ -64,7 +76,9 @@ Terminals
                     String::from("'%{}'"),
                     String::from("'%'"),
                 ]
-            )
+            ),
+            Declaration(DeclarationType::Rootsymbol, vec![String::from("grammar")]),
+            Declaration(DeclarationType::Expect, vec![String::from("3")]),
         ]
     )
 }

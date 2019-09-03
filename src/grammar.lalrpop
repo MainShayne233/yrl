@@ -46,6 +46,7 @@ DeclarationValues: Vec<String> = {
 
 DeclarationValue: String = {
     r"[a-z][a-z|_]*" => <>.to_string(),
+    r"[0-9]+" => <>.to_string(),
     r"'[a-z][a-z|_]*'" => <>.to_string(),
     r"'[;|,|\.|\(|\)|\[|\]|\{|\}|%]'" => <>.to_string(),
     "'<<'" => String::from("'<<'"),
