@@ -45,9 +45,10 @@ DeclarationValues: Vec<String> = {
 }
 
 DeclarationValue: String = {
-    <RawIdentifier>,
-}
-
-RawIdentifier: String = {
-    r"[a-z|_]*" => <>.to_string(),
+    r"[a-z][a-z|_]*" => <>.to_string(),
+    r"'[a-z][a-z|_]*'" => <>.to_string(),
+    r"'[;|,|\.|\(|\)|\[|\]|\{|\}|%]'" => <>.to_string(),
+    "'<<'" => String::from("'<<'"),
+    "'>>'" => String::from("'>>'"),
+    "'%{}'" => String::from("'%{}'"),
 }
