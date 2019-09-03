@@ -1,14 +1,102 @@
 // vi: ft=rust
 
-use crate::ast::{Declaration, DeclarationType, Grammar};
+use crate::ast::{Declaration, DeclarationType, Grammar, NodeExpression, Node};
 
 grammar;
 
 
 pub Grammar: Grammar = {
-    <Declarations> => Grammar {
-        declarations: <>.into_iter().rev().collect()
+    <d:Declarations> <n:Nodes> => Grammar {
+        declarations: d.into_iter().rev().collect(),
+        nodes: n.into_iter().rev().collect(),
     },
+    <Declarations> => Grammar {
+        declarations: <>.into_iter().rev().collect(),
+        nodes: vec![]
+    },
+}
+
+Nodes: Vec<Node> = {
+    <Node> => vec![<>],
+    <x:Node> <v:Nodes> => {
+        let mut v = v;
+        v.push(x);
+        v
+    }
+}
+
+Node: Node = {
+    <lhs:NodeLHS> "->" <rhs:NodeRHS> ":" <expression:NodeExpression> => Node {
+        lhs: lhs,
+        rhs: rhs.into_iter().rev().collect(),
+        expression: expression,
+    }
+}
+
+NodeLHS: String = {
+    r"[a-z][a-z|_]*" => <>.to_string(),
+}
+
+NodeRHS: Vec<String> = {
+    <x:NodeRHSPart> => vec![x],
+
+    <x:NodeRHSPart> <v:NodeRHS> => {
+        let mut v = v;
+        v.push(x);
+        v
+    }
+}
+
+NodeRHSPart: String = {
+    r"[a-z][a-z|_]*" => <>.to_string(),
+}
+
+NodeExpression: NodeExpression = {
+    <NodeExpressionFunctionCall>,
+    <NodeExpressionTuple>,
+    <NodeExpressionList>,
+    <NodeExpressionCharlist>,
+}
+
+NodeExpressionCharlist: NodeExpression = {
+    <r"'[a-z][a-z|_]*'">  => NodeExpression::Charlist { value: <>.to_string() },
+}
+
+NodeExpressionFunctionCall: NodeExpression = {
+    <name:r"[a-z][a-z|_]*"> "(" <args:Comma<NodeExpression>> ")" => NodeExpression::FunctionCall {
+        name: name.to_string(),
+        args: Box::new(args)
+    },
+}
+
+NodeExpressionTuple: NodeExpression = {
+    "{" <values:Comma<NodeExpression>> "}" => NodeExpression::Tuple {
+        values: Box::new(values)
+    },
+}
+
+NodeExpressionList: NodeExpression = {
+    "[" <values:Comma<NodeExpression>> "]" => NodeExpression::List {
+        values: Box::new(values)
+    },
+}
+
+NodeExpressionHeadTailList: NodeExpression = {
+    "[" <head:Comma<NodeExpression>> "|" <tail:NodeExpression> "]" => NodeExpression::HeadTailList {
+        head: Box::new(head),
+        tail: Box::new(tail),
+    },
+}
+
+Comma<T>: Vec<T> = {
+    <v:(<T> ",")*> <e:T?> => match e {
+        None => v,
+        Some(e) => {
+            let mut v = v;
+            v.push(e);
+            v
+        }
+    }
 }
 
 Declarations: Vec<Declaration> = {
