@@ -6,13 +6,9 @@ grammar;
 
 
 pub Grammar: Grammar = {
-    <d:Declarations> <n:Nodes> => Grammar {
-        declarations: d.into_iter().rev().collect(),
-        nodes: n.into_iter().rev().collect(),
-    },
-    <Declarations> => Grammar {
-        declarations: <>.into_iter().rev().collect(),
-        nodes: vec![]
+    <declarations:Declarations> <nodes:Nodes> => Grammar {
+        declarations: declarations.into_iter().rev().collect(),
+        nodes: nodes.into_iter().rev().collect(),
     },
 }
 
@@ -26,7 +22,7 @@ Nodes: Vec<Node> = {
 }
 
 Node: Node = {
-    <lhs:NodeLHS> "->" <rhs:NodeRHS> ":" <expression:NodeExpression> => Node {
+    <lhs:NodeLHS> "->" <rhs:NodeRHS> ":" <expression:NodeExpression> "." => Node {
         lhs: lhs,
         rhs: rhs.into_iter().rev().collect(),
         expression: expression,
@@ -59,7 +55,7 @@ NodeExpression: NodeExpression = {
 }
 
 NodeExpressionCharlist: NodeExpression = {
-    <r"'[a-z][a-z|_]*'">  => NodeExpression::Charlist { value: <>.to_string() },
+    <r"'.*'">  => NodeExpression::Charlist { value: <>.to_string() },
 }
 
 NodeExpressionFunctionCall: NodeExpression = {
