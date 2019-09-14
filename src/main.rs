@@ -57,6 +57,8 @@ access_expr -> bin_string : build_bin_string('$1', delimiter(<<$">>)).
 access_expr -> atom : handle_literal(?exprs('$1'), '$1', delimiter(<<$:>>)).
 access_expr -> atom : handle_literal(?exprs('$1'), '$1', delimiter(<<$'>>)).
 % Also used by maps and structs
+
+stab_expr -> stab_parens_many : ['$1'] ++ ['$2'].
 "#;
 
     let grammar = parse_grammar(input);
@@ -255,6 +257,25 @@ access_expr -> atom : handle_literal(?exprs('$1'), '$1', delimiter(<<$'>>)).
                             name: "delimiter".to_string(),
                             args: Box::new(vec![NodeExpression::Binary {
                                 value: "'".to_string(),
+                            }]),
+                        },
+                    ]),
+                },],
+            },
+            Node {
+                lhs: "stab_expr".to_string(),
+                rhs: vec!["stab_parens_many".to_string()],
+                expressions: vec![NodeExpression::FunctionCall {
+                    name: "++".to_string(),
+                    args: Box::new(vec![
+                        NodeExpression::List {
+                            values: Box::new(vec![NodeExpression::Charlist {
+                                value: "\'$1\'".to_string(),
+                            }]),
+                        },
+                        NodeExpression::List {
+                            values: Box::new(vec![NodeExpression::Charlist {
+                                value: "\'$2\'".to_string(),
                             }]),
                         },
                     ]),

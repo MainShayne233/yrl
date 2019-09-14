@@ -50,6 +50,7 @@ NodeRHSPart: String = {
 
 NodeExpression: NodeExpression = {
     <NodeExpressionFunctionCall>,
+    <NodeExpressionOperatorFunctionCall>,
     <NodeExpressionMacroCall>,
     <NodeExpressionTuple>,
     <NodeExpressionList>,
@@ -89,7 +90,22 @@ NodeExpressionFunctionCall: NodeExpression = {
     <name:UnderscoreIdentPattern> "(" <args:Comma<NodeExpression>> ")" => NodeExpression::FunctionCall {
         name: name.to_string(),
         args: Box::new(args)
-    },
+    }
+}
+
+// TODO: this isn't great... should probably fix
+NodeExpressionOperatorFunctionCall: NodeExpression = {
+    <lhs:Listable> "++" <rhs:Listable> => NodeExpression::FunctionCall {
+        name: "++".to_string(),
+        args: Box::new(vec![lhs, rhs])
+    }
+}
+
+Listable: NodeExpression = {
+    <NodeExpressionMacroCall>,
+    <NodeExpressionFunctionCall>,
+    <NodeExpressionList>,
+    <NodeExpressionHeadTailList>,
 }
 
 NodeExpressionMacroCall: NodeExpression = {
