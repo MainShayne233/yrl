@@ -16,6 +16,9 @@ pub enum NodeExpression {
     Integer {
         value: i64,
     },
+    Atom {
+        value: String,
+    },
     Charlist {
         value: String,
     },

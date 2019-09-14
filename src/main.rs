@@ -51,6 +51,7 @@ grammar -> eoe : {'__block__', meta_from_token('$1'), []}.
 grammar -> '$empty' : {'__block__', [], []}.
 expr_list -> expr_list eoe expr : ['$1', '$2' | cool('$3')].
 matched_expr -> matched_expr matched_op_expr : build_op(element(1, '$2'), '$1', element(2, '$2')).
+assoc_expr -> dot_identifier : build_identifier('$1', nil).
 "#;
 
     let grammar = parse_grammar(input);
@@ -154,6 +155,21 @@ matched_expr -> matched_expr matched_op_expr : build_op(element(1, '$2'), '$1', 
                         },
                     ]),
                 },]
+            },
+            Node {
+                lhs: "assoc_expr".to_string(),
+                rhs: vec!["dot_identifier".to_string(),],
+                expressions: vec![NodeExpression::FunctionCall {
+                    name: "build_identifier".to_string(),
+                    args: Box::new(vec![
+                        NodeExpression::Charlist {
+                            value: "\'$1\'".to_string(),
+                        },
+                        NodeExpression::Atom {
+                            value: "nil".to_string(),
+                        },
+                    ]),
+                },],
             },
         ]
     );

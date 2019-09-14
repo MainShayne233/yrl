@@ -55,10 +55,15 @@ NodeExpression: NodeExpression = {
     <NodeExpressionHeadTailList>,
     <NodeExpressionCharlist>,
     <NodeExpressionInteger>,
+    <NodeExpressionAtom>,
 }
 
 NodeExpressionInteger: NodeExpression = {
     <IntPattern>  => NodeExpression::Integer { value: <>.to_string().parse::<i64>().unwrap() },
+}
+
+NodeExpressionAtom: NodeExpression = {
+    <UnderscoreIdentPattern>  => NodeExpression::Atom { value: <>.to_string() },
 }
 
 NodeExpressionCharlist: NodeExpression = {
