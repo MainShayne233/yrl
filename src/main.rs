@@ -52,6 +52,7 @@ grammar -> '$empty' : {'__block__', [], []}.
 expr_list -> expr_list eoe expr : ['$1', '$2' | cool('$3')].
 matched_expr -> matched_expr matched_op_expr : build_op(element(1, '$2'), '$1', element(2, '$2')).
 assoc_expr -> dot_identifier : build_identifier('$1', nil).
+access_expr -> 'true' : handle_literal(?id('$1'), '$1').
 "#;
 
     let grammar = parse_grammar(input);
@@ -171,6 +172,24 @@ assoc_expr -> dot_identifier : build_identifier('$1', nil).
                     ]),
                 },],
             },
+            Node {
+                lhs: "access_expr".to_string(),
+                rhs: vec!["\'true\'".to_string(),],
+                expressions: vec![NodeExpression::FunctionCall {
+                    name: "handle_literal".to_string(),
+                    args: Box::new(vec![
+                        NodeExpression::MacroCall {
+                            name: "id".to_string(),
+                            args: Box::new(vec![NodeExpression::Charlist {
+                                value: "\'$1\'".to_string(),
+                            }]),
+                        },
+                        NodeExpression::Charlist {
+                            value: "\'$1\'".to_string(),
+                        },
+                    ]),
+                },],
+            },
         ]
     );
     assert_eq!(
@@ -241,8 +260,8 @@ assoc_expr -> dot_identifier : build_identifier('$1', nil).
 }
 
 // #[test]
-// fn test_parse_elixir_grammar() {
-//     let source = fs::read_to_string("test_data/elixir_parser.yrl").unwrap();
-//     parse_grammar(&source[..]);
-//     assert_eq!(true, true);
-// }
+fn test_parse_elixir_grammar() {
+    let source = fs::read_to_string("test_data/elixir_parser.yrl").unwrap();
+    parse_grammar(&source[..]);
+    assert_eq!(true, true);
+}

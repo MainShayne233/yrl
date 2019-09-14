@@ -29,6 +29,10 @@ pub enum NodeExpression {
         name: String,
         args: Box<Vec<NodeExpression>>,
     },
+    MacroCall {
+        name: String,
+        args: Box<Vec<NodeExpression>>,
+    },
     List {
         values: Box<Vec<NodeExpression>>,
     },

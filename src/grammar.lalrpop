@@ -50,6 +50,7 @@ NodeRHSPart: String = {
 
 NodeExpression: NodeExpression = {
     <NodeExpressionFunctionCall>,
+    <NodeExpressionMacroCall>,
     <NodeExpressionTuple>,
     <NodeExpressionList>,
     <NodeExpressionHeadTailList>,
@@ -72,6 +73,13 @@ NodeExpressionCharlist: NodeExpression = {
 
 NodeExpressionFunctionCall: NodeExpression = {
     <name:UnderscoreIdentPattern> "(" <args:Comma<NodeExpression>> ")" => NodeExpression::FunctionCall {
+        name: name.to_string(),
+        args: Box::new(args)
+    },
+}
+
+NodeExpressionMacroCall: NodeExpression = {
+    "?" <name:UnderscoreIdentPattern> "(" <args:Comma<NodeExpression>> ")" => NodeExpression::MacroCall {
         name: name.to_string(),
         args: Box::new(args)
     },
