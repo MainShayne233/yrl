@@ -30,7 +30,7 @@ Node: Node = {
 }
 
 NodeLHS: String = {
-    r"[a-z][a-z|_]*" => <>.to_string(),
+    UnderscoreIdentPattern => <>.to_string(),
 }
 
 NodeRHS: Vec<String> = {
@@ -44,7 +44,7 @@ NodeRHS: Vec<String> = {
 }
 
 NodeRHSPart: String = {
-    r"[a-z][a-z|_]*" => <>.to_string(),
+    UnderscoreIdentPattern => <>.to_string(),
 }
 
 NodeExpression: NodeExpression = {
@@ -55,7 +55,7 @@ NodeExpression: NodeExpression = {
 }
 
 NodeExpressionCharlist: NodeExpression = {
-    <r"'.*'">  => NodeExpression::Charlist { value: <>.to_string() },
+    <SingleQuotedValuePattern>  => NodeExpression::Charlist { value: <>.to_string() },
 }
 
 NodeExpressionFunctionCall: NodeExpression = {
@@ -129,11 +129,16 @@ DeclarationValues: Vec<String> = {
 }
 
 DeclarationValue: String = {
-    r"[a-z][a-z|_]*" => <>.to_string(),
-    r"[0-9]+" => <>.to_string(),
-    r"'[a-z][a-z|_]*'" => <>.to_string(),
-    r"'[;|,|\.|\(|\)|\[|\]|\{|\}|%]'" => <>.to_string(),
-    "'<<'" => String::from("'<<'"),
-    "'>>'" => String::from("'>>'"),
-    "'%{}'" => String::from("'%{}'"),
+    UnderscoreIdentPattern => <>.to_string(),
+    IntPattern => <>.to_string(),
+    SingleQuotedValuePattern => <>.to_string()
 }
+
+match {
+  r"[a-z][a-z|_]*" => UnderscoreIdentPattern,
+  r"[0-9]+" => IntPattern,
+  r"'[^']+'" => SingleQuotedValuePattern,
+} else {
+   _,
+}
+

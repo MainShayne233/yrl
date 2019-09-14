@@ -1,8 +1,9 @@
 #[macro_use]
 extern crate lalrpop_util;
 
-use crate::ast::{Declaration, DeclarationType, Grammar, Node};
+use crate::ast::{Declaration, DeclarationType, Grammar, Node, NodeExpression};
 use crate::preprocess::*;
+use pretty_assertions::{assert_eq, assert_ne};
 
 lalrpop_mod!(pub grammar);
 
@@ -43,13 +44,14 @@ Left      40 in_match_op_eol. %% <-, \\ (allowed in matches along =)
 Nonassoc 300 unary_op_eol.    %% +, -, !, ^, not, ~~~
 
 %%% MAIN FLOW OF EXPRESSIONS
-grammar -> eoe : 'hello'.
+
+expr -> matched_expr : '$1'.
 "#;
 
     let grammar = parse_grammar(input);
     assert_eq!(
         grammar.nodes,
-        vec![]
+        vec![Node { lhs: "expr".to_string(), rhs: vec!["matched_expr".to_string()], expression: NodeExpression::Charlist { value: "\'$1\'".to_string() } }]
     );
     assert_eq!(
         grammar.declarations,
