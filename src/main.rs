@@ -3,7 +3,7 @@ extern crate lalrpop_util;
 
 use crate::ast::{Declaration, DeclarationType, Grammar, Node, NodeExpression};
 use crate::preprocess::*;
-use pretty_assertions::{assert_eq, assert_ne};
+use pretty_assertions::{assert_eq};
 
 lalrpop_mod!(pub grammar);
 
