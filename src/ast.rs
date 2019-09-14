@@ -13,6 +13,9 @@ pub struct Node {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum NodeExpression {
+    Integer {
+        value: i64,
+    },
     Charlist {
         value: String,
     },

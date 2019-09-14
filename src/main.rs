@@ -50,6 +50,7 @@ expr -> matched_expr : '$1'.
 grammar -> eoe : {'__block__', meta_from_token('$1'), []}.
 grammar -> '$empty' : {'__block__', [], []}.
 expr_list -> expr_list eoe expr : ['$1', '$2' | cool('$3')].
+matched_expr -> matched_expr matched_op_expr : build_op(element(1, '$2'), '$1', element(2, '$2')).
 "#;
 
     let grammar = parse_grammar(input);
@@ -124,6 +125,44 @@ expr_list -> expr_list eoe expr : ['$1', '$2' | cool('$3')].
                     }),
                 },
             },
+    Node {
+        lhs: "matched_expr".to_string(),
+        rhs: vec![
+            "matched_expr".to_string(),
+            "matched_op_expr".to_string(),
+        ],
+        expression: NodeExpression::FunctionCall {
+            name: "build_op".to_string(),
+            args: Box::new(vec![
+                NodeExpression::FunctionCall {
+                    name: "element".to_string(),
+                    args: Box::new(vec![
+                        NodeExpression::Integer {
+                            value: 1,
+                        },
+                        NodeExpression::Charlist {
+                            value: "\'$2\'".to_string(),
+                        },
+                    ]),
+                },
+                NodeExpression::Charlist {
+                    value: "\'$1\'".to_string(),
+                },
+                NodeExpression::FunctionCall {
+                    name: "element".to_string(),
+                    args: Box::new(vec![
+                        NodeExpression::Integer {
+                            value: 2,
+                        },
+                        NodeExpression::Charlist {
+                            value: "\'$2\'".to_string(),
+                        },
+                    ]),
+                },
+            ]),
+        },
+    },
+
         ]
     );
     assert_eq!(
@@ -193,7 +232,7 @@ expr_list -> expr_list eoe expr : ['$1', '$2' | cool('$3')].
     )
 }
 
-// #[test]
+//#[test]
 fn test_parse_elixir_grammar() {
     let source = fs::read_to_string("test_data/elixir_parser.yrl").unwrap();
     parse_grammar(&source[..]);
