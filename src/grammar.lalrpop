@@ -54,6 +54,7 @@ NodeExpression: NodeExpression = {
     <NodeExpressionTuple>,
     <NodeExpressionList>,
     <NodeExpressionHeadTailList>,
+    <NodeExpressionBinary>,
     <NodeExpressionCharlist>,
     <NodeExpressionInteger>,
     <NodeExpressionAtom>,
@@ -69,6 +70,11 @@ NodeExpressionAtom: NodeExpression = {
 
 NodeExpressionCharlist: NodeExpression = {
     <SingleQuotedValuePattern>  => NodeExpression::Charlist { value: <>.to_string() },
+}
+
+NodeExpressionBinary: NodeExpression = {
+//    r"'[^']+'"
+    "<<$" <r"[^>]"> ">>"  => NodeExpression::Binary { value: <>.to_string() },
 }
 
 NodeExpressionFunctionCall: NodeExpression = {

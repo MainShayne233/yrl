@@ -22,6 +22,9 @@ pub enum NodeExpression {
     Charlist {
         value: String,
     },
+    Binary {
+        value: String,
+    },
     Tuple {
         values: Box<Vec<NodeExpression>>,
     },
