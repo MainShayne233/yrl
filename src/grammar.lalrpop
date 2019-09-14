@@ -45,6 +45,7 @@ NodeRHS: Vec<String> = {
 
 NodeRHSPart: String = {
     UnderscoreIdentPattern => <>.to_string(),
+    SingleQuotedValuePattern => <>.to_string(),
 }
 
 NodeExpression: NodeExpression = {

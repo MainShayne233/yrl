@@ -3,7 +3,7 @@ extern crate lalrpop_util;
 
 use crate::ast::{Declaration, DeclarationType, Grammar, Node, NodeExpression};
 use crate::preprocess::*;
-use pretty_assertions::{assert_eq};
+use pretty_assertions::assert_eq;
 
 lalrpop_mod!(pub grammar);
 
@@ -47,6 +47,7 @@ Nonassoc 300 unary_op_eol.    %% +, -, !, ^, not, ~~~
 
 expr -> matched_expr : '$1'.
 grammar -> eoe : {'__block__', meta_from_token('$1'), []}.
+grammar -> '$empty' : {'__block__', [], []}.
 "#;
 
     let grammar = parse_grammar(input);
@@ -79,7 +80,24 @@ grammar -> eoe : {'__block__', meta_from_token('$1'), []}.
                         }
                     ])
                 }
-            }
+            },
+            Node {
+                lhs: "grammar".to_string(),
+                rhs: vec!["\'$empty\'".to_string(),],
+                expression: NodeExpression::Tuple {
+                    values: Box::new(vec![
+                        NodeExpression::Charlist {
+                            value: "\'__block__\'".to_string(),
+                        },
+                        NodeExpression::List {
+                            values: Box::new(vec![])
+                        },
+                        NodeExpression::List {
+                            values: Box::new(vec![])
+                        },
+                    ]),
+                },
+            },
         ]
     );
     assert_eq!(
