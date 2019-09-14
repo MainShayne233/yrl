@@ -46,12 +46,41 @@ Nonassoc 300 unary_op_eol.    %% +, -, !, ^, not, ~~~
 %%% MAIN FLOW OF EXPRESSIONS
 
 expr -> matched_expr : '$1'.
+grammar -> eoe : {'__block__', meta_from_token('$1'), []}.
 "#;
 
     let grammar = parse_grammar(input);
     assert_eq!(
         grammar.nodes,
-        vec![Node { lhs: "expr".to_string(), rhs: vec!["matched_expr".to_string()], expression: NodeExpression::Charlist { value: "\'$1\'".to_string() } }]
+        vec![
+            Node {
+                lhs: "expr".to_string(),
+                rhs: vec!["matched_expr".to_string()],
+                expression: NodeExpression::Charlist {
+                    value: "\'$1\'".to_string()
+                }
+            },
+            Node {
+                lhs: "grammar".to_string(),
+                rhs: vec!["eoe".to_string()],
+                expression: NodeExpression::Tuple {
+                    values: Box::new(vec![
+                        NodeExpression::Charlist {
+                            value: "'__block__'".to_string()
+                        },
+                        NodeExpression::FunctionCall {
+                            name: "meta_from_token".to_string(),
+                            args: Box::new(vec![NodeExpression::Charlist {
+                                value: "'$1'".to_string()
+                            }])
+                        },
+                        NodeExpression::List {
+                            values: Box::new(vec![])
+                        }
+                    ])
+                }
+            }
+        ]
     );
     assert_eq!(
         grammar.declarations,

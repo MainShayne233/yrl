@@ -59,7 +59,7 @@ NodeExpressionCharlist: NodeExpression = {
 }
 
 NodeExpressionFunctionCall: NodeExpression = {
-    <name:r"[a-z][a-z|_]*"> "(" <args:Comma<NodeExpression>> ")" => NodeExpression::FunctionCall {
+    <name:UnderscoreIdentPattern> "(" <args:Comma<NodeExpression>> ")" => NodeExpression::FunctionCall {
         name: name.to_string(),
         args: Box::new(args)
     },
@@ -137,7 +137,7 @@ DeclarationValue: String = {
 match {
   r"[a-z][a-z|_]*" => UnderscoreIdentPattern,
   r"[0-9]+" => IntPattern,
-  r"'[^']+'" => SingleQuotedValuePattern,
+    r"'[^']+'" => SingleQuotedValuePattern,
 } else {
    _,
 }
