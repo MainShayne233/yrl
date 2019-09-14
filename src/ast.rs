@@ -8,7 +8,7 @@ pub struct Grammar {
 pub struct Node {
     pub lhs: String,
     pub rhs: Vec<String>,
-    pub expression: NodeExpression,
+    pub expressions: Vec<NodeExpression>,
 }
 
 #[derive(Debug, Clone, PartialEq)]

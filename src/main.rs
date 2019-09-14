@@ -60,14 +60,14 @@ matched_expr -> matched_expr matched_op_expr : build_op(element(1, '$2'), '$1', 
             Node {
                 lhs: "expr".to_string(),
                 rhs: vec!["matched_expr".to_string()],
-                expression: NodeExpression::Charlist {
+                expressions: vec![NodeExpression::Charlist {
                     value: "\'$1\'".to_string()
-                }
+                }]
             },
             Node {
                 lhs: "grammar".to_string(),
                 rhs: vec!["eoe".to_string()],
-                expression: NodeExpression::Tuple {
+                expressions: vec![NodeExpression::Tuple {
                     values: Box::new(vec![
                         NodeExpression::Charlist {
                             value: "'__block__'".to_string()
@@ -82,12 +82,12 @@ matched_expr -> matched_expr matched_op_expr : build_op(element(1, '$2'), '$1', 
                             values: Box::new(vec![])
                         }
                     ])
-                }
+                }]
             },
             Node {
                 lhs: "grammar".to_string(),
                 rhs: vec!["\'$empty\'".to_string(),],
-                expression: NodeExpression::Tuple {
+                expressions: vec![NodeExpression::Tuple {
                     values: Box::new(vec![
                         NodeExpression::Charlist {
                             value: "\'__block__\'".to_string(),
@@ -99,7 +99,7 @@ matched_expr -> matched_expr matched_op_expr : build_op(element(1, '$2'), '$1', 
                             values: Box::new(vec![])
                         },
                     ]),
-                },
+                },]
             },
             Node {
                 lhs: "expr_list".to_string(),
@@ -108,7 +108,7 @@ matched_expr -> matched_expr matched_op_expr : build_op(element(1, '$2'), '$1', 
                     "eoe".to_string(),
                     "expr".to_string(),
                 ],
-                expression: NodeExpression::HeadTailList {
+                expressions: vec![NodeExpression::HeadTailList {
                     head: Box::new(vec![
                         NodeExpression::Charlist {
                             value: "\'$1\'".to_string(),
@@ -123,46 +123,38 @@ matched_expr -> matched_expr matched_op_expr : build_op(element(1, '$2'), '$1', 
                             value: "\'$3\'".to_string(),
                         }]),
                     }),
-                },
+                },]
             },
-    Node {
-        lhs: "matched_expr".to_string(),
-        rhs: vec![
-            "matched_expr".to_string(),
-            "matched_op_expr".to_string(),
-        ],
-        expression: NodeExpression::FunctionCall {
-            name: "build_op".to_string(),
-            args: Box::new(vec![
-                NodeExpression::FunctionCall {
-                    name: "element".to_string(),
+            Node {
+                lhs: "matched_expr".to_string(),
+                rhs: vec!["matched_expr".to_string(), "matched_op_expr".to_string(),],
+                expressions: vec![NodeExpression::FunctionCall {
+                    name: "build_op".to_string(),
                     args: Box::new(vec![
-                        NodeExpression::Integer {
-                            value: 1,
+                        NodeExpression::FunctionCall {
+                            name: "element".to_string(),
+                            args: Box::new(vec![
+                                NodeExpression::Integer { value: 1 },
+                                NodeExpression::Charlist {
+                                    value: "\'$2\'".to_string(),
+                                },
+                            ]),
                         },
                         NodeExpression::Charlist {
-                            value: "\'$2\'".to_string(),
+                            value: "\'$1\'".to_string(),
+                        },
+                        NodeExpression::FunctionCall {
+                            name: "element".to_string(),
+                            args: Box::new(vec![
+                                NodeExpression::Integer { value: 2 },
+                                NodeExpression::Charlist {
+                                    value: "\'$2\'".to_string(),
+                                },
+                            ]),
                         },
                     ]),
-                },
-                NodeExpression::Charlist {
-                    value: "\'$1\'".to_string(),
-                },
-                NodeExpression::FunctionCall {
-                    name: "element".to_string(),
-                    args: Box::new(vec![
-                        NodeExpression::Integer {
-                            value: 2,
-                        },
-                        NodeExpression::Charlist {
-                            value: "\'$2\'".to_string(),
-                        },
-                    ]),
-                },
-            ]),
-        },
-    },
-
+                },]
+            },
         ]
     );
     assert_eq!(
@@ -232,9 +224,9 @@ matched_expr -> matched_expr matched_op_expr : build_op(element(1, '$2'), '$1', 
     )
 }
 
-//#[test]
-fn test_parse_elixir_grammar() {
-    let source = fs::read_to_string("test_data/elixir_parser.yrl").unwrap();
-    parse_grammar(&source[..]);
-    assert_eq!(true, true);
-}
+// #[test]
+// fn test_parse_elixir_grammar() {
+//     let source = fs::read_to_string("test_data/elixir_parser.yrl").unwrap();
+//     parse_grammar(&source[..]);
+//     assert_eq!(true, true);
+// }

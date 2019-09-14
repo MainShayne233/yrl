@@ -22,10 +22,10 @@ Nodes: Vec<Node> = {
 }
 
 Node: Node = {
-    <lhs:NodeLHS> "->" <rhs:NodeRHS> ":" <expression:NodeExpression> "." => Node {
+    <lhs:NodeLHS> "->" <rhs:NodeRHS> ":" <expressions:Comma<NodeExpression>> "." => Node {
         lhs: lhs,
         rhs: rhs.into_iter().rev().collect(),
-        expression: expression,
+        expressions: expressions,
     }
 }
 
