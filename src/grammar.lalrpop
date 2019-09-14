@@ -76,6 +76,7 @@ NodeExpressionBinary: NodeExpression = {
     // TODO Fix this pattern
     "<<$" <r"[^>]"> ">>"  => NodeExpression::Binary { value: <>.to_string() },
     "<<$:>>" => NodeExpression::Binary { value: ":".to_string() },
+    "<<$'>>" => NodeExpression::Binary { value: "'".to_string() },
 }
 
 NodeExpressionFunctionCall: NodeExpression = {

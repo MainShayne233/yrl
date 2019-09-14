@@ -55,6 +55,7 @@ assoc_expr -> dot_identifier : build_identifier('$1', nil).
 access_expr -> 'true' : handle_literal(?id('$1'), '$1').
 access_expr -> bin_string : build_bin_string('$1', delimiter(<<$">>)).
 access_expr -> atom : handle_literal(?exprs('$1'), '$1', delimiter(<<$:>>)).
+access_expr -> atom : handle_literal(?exprs('$1'), '$1', delimiter(<<$'>>)).
 "#;
 
     let grammar = parse_grammar(input);
@@ -218,7 +219,9 @@ access_expr -> atom : handle_literal(?exprs('$1'), '$1', delimiter(<<$:>>)).
                     args: Box::new(vec![
                         NodeExpression::MacroCall {
                             name: "exprs".to_string(),
-                            args: Box::new(vec![NodeExpression::Charlist { value: "\'$1\'".to_string() },]),
+                            args: Box::new(vec![NodeExpression::Charlist {
+                                value: "\'$1\'".to_string()
+                            },]),
                         },
                         NodeExpression::Charlist {
                             value: "\'$1\'".to_string(),
@@ -227,6 +230,30 @@ access_expr -> atom : handle_literal(?exprs('$1'), '$1', delimiter(<<$:>>)).
                             name: "delimiter".to_string(),
                             args: Box::new(vec![NodeExpression::Binary {
                                 value: ":".to_string(),
+                            }]),
+                        },
+                    ]),
+                },],
+            },
+            Node {
+                lhs: "access_expr".to_string(),
+                rhs: vec!["atom".to_string(),],
+                expressions: vec![NodeExpression::FunctionCall {
+                    name: "handle_literal".to_string(),
+                    args: Box::new(vec![
+                        NodeExpression::MacroCall {
+                            name: "exprs".to_string(),
+                            args: Box::new(vec![NodeExpression::Charlist {
+                                value: "\'$1\'".to_string()
+                            },]),
+                        },
+                        NodeExpression::Charlist {
+                            value: "\'$1\'".to_string(),
+                        },
+                        NodeExpression::FunctionCall {
+                            name: "delimiter".to_string(),
+                            args: Box::new(vec![NodeExpression::Binary {
+                                value: "'".to_string(),
                             }]),
                         },
                     ]),
