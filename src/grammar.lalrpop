@@ -52,6 +52,7 @@ NodeExpression: NodeExpression = {
     <NodeExpressionFunctionCall>,
     <NodeExpressionTuple>,
     <NodeExpressionList>,
+    <NodeExpressionHeadTailList>,
     <NodeExpressionCharlist>,
 }
 

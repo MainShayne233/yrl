@@ -4,6 +4,7 @@ extern crate lalrpop_util;
 use crate::ast::{Declaration, DeclarationType, Grammar, Node, NodeExpression};
 use crate::preprocess::*;
 use pretty_assertions::assert_eq;
+use std::fs;
 
 lalrpop_mod!(pub grammar);
 
@@ -48,6 +49,7 @@ Nonassoc 300 unary_op_eol.    %% +, -, !, ^, not, ~~~
 expr -> matched_expr : '$1'.
 grammar -> eoe : {'__block__', meta_from_token('$1'), []}.
 grammar -> '$empty' : {'__block__', [], []}.
+expr_list -> expr_list eoe expr : ['$1', '$2' | cool('$3')].
 "#;
 
     let grammar = parse_grammar(input);
@@ -96,6 +98,30 @@ grammar -> '$empty' : {'__block__', [], []}.
                             values: Box::new(vec![])
                         },
                     ]),
+                },
+            },
+            Node {
+                lhs: "expr_list".to_string(),
+                rhs: vec![
+                    "expr_list".to_string(),
+                    "eoe".to_string(),
+                    "expr".to_string(),
+                ],
+                expression: NodeExpression::HeadTailList {
+                    head: Box::new(vec![
+                        NodeExpression::Charlist {
+                            value: "\'$1\'".to_string(),
+                        },
+                        NodeExpression::Charlist {
+                            value: "\'$2\'".to_string(),
+                        },
+                    ]),
+                    tail: Box::new(NodeExpression::FunctionCall {
+                        name: "cool".to_string(),
+                        args: Box::new(vec![NodeExpression::Charlist {
+                            value: "\'$3\'".to_string(),
+                        }]),
+                    }),
                 },
             },
         ]
@@ -165,4 +191,11 @@ grammar -> '$empty' : {'__block__', [], []}.
             ),
         ]
     )
+}
+
+// #[test]
+fn test_parse_elixir_grammar() {
+    let source = fs::read_to_string("test_data/elixir_parser.yrl").unwrap();
+    parse_grammar(&source[..]);
+    assert_eq!(true, true);
 }
