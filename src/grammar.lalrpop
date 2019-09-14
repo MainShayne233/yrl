@@ -73,10 +73,16 @@ NodeExpressionCharlist: NodeExpression = {
 }
 
 NodeExpressionBinary: NodeExpression = {
-    // TODO Fix this pattern
-    "<<$" <r"[^>]"> ">>"  => NodeExpression::Binary { value: <>.to_string() },
-    "<<$:>>" => NodeExpression::Binary { value: ":".to_string() },
-    "<<$'>>" => NodeExpression::Binary { value: "'".to_string() },
+    r"<<.*>>" => {
+        let mut buffer = String::with_capacity(<>.len());
+        let mut chars = <>[2..<>.len() - 2].chars();
+        while let Some(c) = chars.next() {
+            if c != '$' {
+                buffer.push(c);
+            }
+        }
+        NodeExpression::Binary{value: buffer}
+    }
 }
 
 NodeExpressionFunctionCall: NodeExpression = {

@@ -1,7 +1,10 @@
 pub fn strip_extra(src: &str) -> String {
     enum Mode {
         Normal,
-        String,
+        CharList,
+        MaybeBinary,
+        Binary,
+        MaybeNotBinary,
         Comment,
     };
 
@@ -12,7 +15,11 @@ pub fn strip_extra(src: &str) -> String {
         match mode {
             Mode::Normal => match c {
                 '\'' => {
-                    mode = Mode::String;
+                    mode = Mode::CharList;
+                    buffer.push(c);
+                }
+                '<' => {
+                    mode = Mode::MaybeBinary;
                     buffer.push(c);
                 }
                 '%' => {
@@ -23,7 +30,39 @@ pub fn strip_extra(src: &str) -> String {
                 _ => buffer.push(c),
             },
 
-            Mode::String => match c {
+            Mode::MaybeBinary => match c {
+                '<' => {
+                    mode = Mode::Binary;
+                    buffer.push(c);
+                }
+                _ => {
+                    mode = Mode::Normal;
+                    buffer.push(c);
+                }
+            },
+
+            Mode::Binary => match c {
+                '>' => {
+                    mode = Mode::MaybeNotBinary;
+                    buffer.push(c);
+                }
+                _ => {
+                    buffer.push(c);
+                }
+            },
+
+            Mode::MaybeNotBinary => match c {
+                '>' => {
+                    mode = Mode::Normal;
+                    buffer.push(c);
+                }
+                _ => {
+                    mode = Mode::Binary;
+                    buffer.push(c);
+                }
+            },
+
+            Mode::CharList => match c {
                 '\'' => {
                     mode = Mode::Normal;
                     buffer.push(c);

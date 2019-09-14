@@ -56,6 +56,7 @@ access_expr -> 'true' : handle_literal(?id('$1'), '$1').
 access_expr -> bin_string : build_bin_string('$1', delimiter(<<$">>)).
 access_expr -> atom : handle_literal(?exprs('$1'), '$1', delimiter(<<$:>>)).
 access_expr -> atom : handle_literal(?exprs('$1'), '$1', delimiter(<<$'>>)).
+% Also used by maps and structs
 "#;
 
     let grammar = parse_grammar(input);
@@ -331,6 +332,6 @@ access_expr -> atom : handle_literal(?exprs('$1'), '$1', delimiter(<<$'>>)).
 // #[test]
 fn test_parse_elixir_grammar() {
     let source = fs::read_to_string("test_data/elixir_parser.yrl").unwrap();
-    parse_grammar(&source[..]);
+    parse_grammar(&source);
     assert_eq!(true, true);
 }
