@@ -6,10 +6,14 @@ grammar;
 
 
 pub Grammar: Grammar = {
-    <declarations:Declarations> <nodes:Nodes> => Grammar {
+    <declarations:Declarations> <nodes:Nodes> ErlangCode => Grammar {
         declarations: declarations.into_iter().rev().collect(),
         nodes: nodes.into_iter().rev().collect(),
     },
+}
+
+ErlangCode: () = {
+    r"Erlang code\.([\n]|.)*" => (),
 }
 
 Nodes: Vec<Node> = {

@@ -11,6 +11,7 @@ lalrpop_mod!(pub grammar);
 pub mod ast;
 pub mod preprocess;
 
+
 fn parse_grammar(input: &str) -> Grammar {
     grammar::GrammarParser::new()
         .parse(&strip_extra(input))
@@ -59,6 +60,9 @@ access_expr -> atom : handle_literal(?exprs('$1'), '$1', delimiter(<<$'>>)).
 % Also used by maps and structs
 
 stab_expr -> stab_parens_many : ['$1'] ++ ['$2'].
+
+Erlang code.
+cool
 "#;
 
     let grammar = parse_grammar(input);
@@ -350,7 +354,7 @@ stab_expr -> stab_parens_many : ['$1'] ++ ['$2'].
     )
 }
 
-// #[test]
+#[test]
 fn test_parse_elixir_grammar() {
     let source = fs::read_to_string("test_data/elixir_parser.yrl").unwrap();
     parse_grammar(&source);
